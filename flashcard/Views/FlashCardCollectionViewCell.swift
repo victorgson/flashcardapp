@@ -16,6 +16,32 @@ class FlashCardCollectionViewCell: UICollectionViewCell {
     
     var cardViews : (frontView: UIView, backView: UIView)?
     
+    var item: CardModel? {
+        didSet {
+            guard let item = item else { return }
+            if let questionImage = item.questionImage {
+                frontImage.image = UIImage(data: questionImage )
+            
+            } else {
+                frontImage.image = nil
+            }
+            
+            if let answerImage = item.answerImage {
+                backImage.image = UIImage(data: answerImage )
+            }
+            else {
+                backImage.image = nil
+            }
+           
+            frontLabel.text = item.questionString
+            backLabel.text = item.answerString
+            
+//            if item.isCompleted ?? false {
+//                contentView.addSubview(completedIcon)
+//            }
+            layout()
+        }
+    }
     let frontView : UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -64,14 +90,9 @@ class FlashCardCollectionViewCell: UICollectionViewCell {
     
     lazy var completedIcon : UIImageView = {
         let imageView = UIImageView()
-        var completed = true
-        
-        if(completed) {
-            let img = UIImage(systemName: "checkmark.circle.fill")!.withRenderingMode(.alwaysTemplate)
-            imageView.tintColor = .systemGreen
-            imageView.image = img
-        }
-        
+        let img = UIImage(systemName: "checkmark.circle.fill")!.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .systemGreen
+        imageView.image = img
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -131,15 +152,15 @@ class FlashCardCollectionViewCell: UICollectionViewCell {
         
         cardViews = (frontView: frontView, backView: backView)
         
-        contentView.addSubviews(backView, frontView, completedIcon)
+        contentView.addSubviews(backView, frontView)
         
         frontView.addSubviews(frontLabel, frontImage)
         backView.addSubviews(backLabel, backImage)
         
-        
+    
         frontView.addLayoutGuide(frontLayoutGuide)
         backView.addLayoutGuide(backLayoutGuide)
-        completedIcon.isHidden = true
+//        completedIcon.isHidden = true
         
         
         frontLayoutGuide.topAnchor.constraint(equalTo: frontView.topAnchor, constant: 24).isActive = true
@@ -163,11 +184,11 @@ class FlashCardCollectionViewCell: UICollectionViewCell {
 //        backLabel.topAnchor.constraint(equalTo: backView.topAnchor).isActive = true
 //        backLabel.bottomAnchor.constraint(equalTo: backView.bottomAnchor).isActive = true
         
-        completedIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
-        completedIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
+//        completedIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+//        completedIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16).isActive = true
+//
         
-        
-        if(hasQuestionImage ?? false) {
+        if(frontImage.image != nil) {
             NSLayoutConstraint.activate(questionImageConstraints)
 
         }
@@ -175,7 +196,7 @@ class FlashCardCollectionViewCell: UICollectionViewCell {
             NSLayoutConstraint.activate(noQuestionImageConstraints)
         }
         
-        if(hasAnswerImage ?? false) {
+        if(backImage.image != nil) {
             NSLayoutConstraint.activate(answerImageConstraints)
 
         }
@@ -203,8 +224,7 @@ class FlashCardCollectionViewCell: UICollectionViewCell {
         NSLayoutConstraint.deactivate(noAnswerImageConstraints)
         frontImage.image = nil
         backImage.image = nil
-        hasAnswerImage = false
-        hasQuestionImage = false
+
   
     }
 }

@@ -14,30 +14,30 @@ class FlashCardCollectionView: UIView {
 
     let db = DBCardHelper()
     
+    let flashCardViewModel: FlashCardViewModel
+    
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
-        
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-
         view.isPagingEnabled = true
         view.showsHorizontalScrollIndicator = false
         view.alwaysBounceHorizontal = false
         view.delegate = self
-        view.dataSource = self
+        view.dataSource = flashCardViewModel
         return view
     }()
     
-    required init?(coder: NSCoder) {
-        fatalError()
+    init(flashCardViewModel: FlashCardViewModel) {
+        self.flashCardViewModel = flashCardViewModel
+        super.init(frame: .zero)
+        setupAndLayout()
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupAndLayout()
-
+    required init?(coder: NSCoder) {
+        fatalError()
     }
     
     let currentIndex = PassthroughSubject<Int, Never>()
@@ -49,39 +49,7 @@ class FlashCardCollectionView: UIView {
  
     
 }
-
-// TODO: Skapa FlashCardViewModel
-extension FlashCardCollectionView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    
-    
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! FlashCardCollectionViewCell
-        
-        if let d = data[indexPath.item].questionImage {
-            print(d)
-            cell.hasQuestionImage = true
-            cell.frontImage.image = UIImage(data: d)
-        }
-        
-        if let answerImage = data[indexPath.item].answerImage {
-            cell.hasAnswerImage = true
-            cell.backImage.image = UIImage(data: answerImage)
-        }
-  
-        cell.frontLabel.text = data[indexPath.item].questionString
-        cell.backLabel.text = data[indexPath.item].answerString
-
-        
-        if(data[indexPath.item].isCompleted ?? false) {
-            cell.completedIcon.isHidden = false
-        }
-        cell.layout()
-        return cell
-        
-    }
-    
+extension FlashCardCollectionView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let transitionOptions = UIView.AnimationOptions.transitionFlipFromRight
@@ -95,29 +63,21 @@ extension FlashCardCollectionView: UICollectionViewDataSource, UICollectionViewD
         }
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         currentIndex.send(indexPath.item)
         currentId.send(data[indexPath.item].id)
     }
         
-    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
 
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        totalItems.send(data.count)
-        return data.count
-    }
-    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                                sizeForItemAt indexPath: IndexPath) -> CGSize {
         let cellWidth = self.frame.width
         let parentHeight = self.frame.height
         return CGSize(width: cellWidth, height: parentHeight)
     }
-    
-    
 }
 
 extension FlashCardCollectionView {
@@ -132,6 +92,4 @@ extension FlashCardCollectionView {
         collectionView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         collectionView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
     }
-    
-   
 }

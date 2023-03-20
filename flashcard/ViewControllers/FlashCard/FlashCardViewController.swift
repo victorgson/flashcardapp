@@ -33,6 +33,7 @@ class FlashCardViewController: UIViewController {
     let pageControl = UIPageControl()
     
     let viewModel = CardViewModel()
+    lazy var flashCardViewModel = FlashCardViewModel(viewModel: viewModel)
     
     lazy var vc = PageSheetViewController(isDeck: false)
     
@@ -41,37 +42,36 @@ class FlashCardViewController: UIViewController {
     let layoutGuide = UILayoutGuide()
     
     lazy var collectionView : FlashCardCollectionView = {
-        var collectionView = FlashCardCollectionView()
-
+        var collectionView = FlashCardCollectionView(flashCardViewModel: flashCardViewModel)
         return collectionView
     }()
     
-    lazy var delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill")) { [weak self] _ in
-        
-        self?.viewModel.deleteCard(model: CardModel(id: (self?.currentId)!, questionString: "String", answerString: "", isCompleted: false))
-        self?.viewModel.getAllCards(inDeck: (self?.deckId)!)
-    }
+//    lazy var delete = UIAction(title: "Delete", image: UIImage(systemName: "trash.fill")) { [weak self] _ in
+//        guard let self else { return }
+//        self.viewModel.deleteCard(model: CardModel(id: (self.currentId)!, questionString: "String", answerString: "", isCompleted: false))
+//        self.viewModel.getAllCards(inDeck: (self.deckId)!)
+//    }
     
-    lazy var showComplete = UIAction(title: "Show/Hide all completed cards", image: UIImage(systemName: "checkmark.circle.fill")) { [weak self] _ in
-        
-        self?.handleShowCompletedCards()
-   
-   }
-    
-    lazy var share = UIAction(title: "Share deck", image: UIImage(systemName: "square.and.arrow.up.fill")) {[weak self] _ in
-        
-        //To be implemented
-   
-   }
-    
-    lazy var edit = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) {[weak self] _ in
-        self?.editCardVC.modalPresentationStyle = .pageSheet
-        self?.editCardVC.sheetPresentationController?.detents = [.medium()]
-        self?.navigationController?.present(self!.editCardVC, animated: true)
-        
-        self?.editCardVC.populateEditCard(cardId: self!.currentId!) // Fixa om de inte finns något kort
-
-    }
+//    lazy var showComplete = UIAction(title: "Show/Hide all completed cards", image: UIImage(systemName: "checkmark.circle.fill")) { [weak self] _ in
+//
+//        self?.handleShowCompletedCards()
+//
+//   }
+//
+//    lazy var share = UIAction(title: "Share deck", image: UIImage(systemName: "square.and.arrow.up.fill")) {[weak self] _ in
+//
+//        //To be implemented
+//
+//   }
+//
+//    lazy var edit = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) {[weak self] _ in
+//        self?.editCardVC.modalPresentationStyle = .pageSheet
+//        self?.editCardVC.sheetPresentationController?.detents = [.medium()]
+//        self?.navigationController?.present(self!.editCardVC, animated: true)
+//
+//        self?.editCardVC.populateEditCard(cardId: self!.currentId!) // Fixa om de inte finns något kort
+//
+//    }
     
     var deckId: Int?
     var currentId: Int?
@@ -95,6 +95,7 @@ class FlashCardViewController: UIViewController {
     private var cancellables: [AnyCancellable] = []
     
     func bindViewModel () {
+//        viewModel.getAllCards(inDeck: deckId!)
         viewModel.$data.sink { [weak self] result in
             self?.collectionView.data = result.shuffled()
             self?.collectionView.collectionView.reloadData()
@@ -147,7 +148,7 @@ class FlashCardViewController: UIViewController {
         
         button.setImage(btnImage, for: .normal)
         button.showsMenuAsPrimaryAction = true
-        button.menu = UIMenu(title:"", children: [edit, delete, showComplete, share])
+        //button.menu = UIMenu(title:"", children: [edit, delete, showComplete, share])
 
         let add = UIButton(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
         let addImage = UIImageView(image: UIImage(systemName: "plus.circle", withConfiguration: config))

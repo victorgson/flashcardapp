@@ -128,13 +128,13 @@ extension DeckTableViewController {
         let deckId = viewModel.data[indexPath.row].id
         let numberOfCards = viewModel.numberOfCardsIn(deck: deckId)
 
-        if numberOfCards == 0 {
-            cell.termsLabel.text = "\(numberOfCards) cards"
-        } else if numberOfCards == 1 {
+        switch numberOfCards {
+        case 1:
             cell.termsLabel.text = "\(numberOfCards) card"
-        } else {
+        default:
             cell.termsLabel.text = "\(numberOfCards) cards"
         }
+        
         return cell
     }
     

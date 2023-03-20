@@ -28,8 +28,9 @@ class DeckViewModel {
     }
     
     func numberOfCardsIn(deck: Int) -> Int {
-        var amountOfCards = cardVM.getAllCards(inDeck: deck)
-        return amountOfCards
+//        let amountOfCards = cardVM.numberOfCards(in: deck)
+//        return amountOfCards
+        return 0
     }
     
     func addDeck(deckName: String) {
@@ -39,4 +40,6 @@ class DeckViewModel {
     func numberOfDecks() -> Int {
         return data.count
     }
+  
+    
 }
